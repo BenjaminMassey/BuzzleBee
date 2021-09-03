@@ -10,24 +10,36 @@ players = []
 @app.route('/', methods = ['GET', 'POST'])
 def index():
 	global players
+	result = None
 	try:
 		result = request.form.get('name')
 	except:
-		result = None
-	print("Here is the result:", result)
+		print("WARNING: no name - either new or failure")
 	if result is not None and result not in players:
 		players.append(result)
+	player_text = result if result is not None else ""
 	page = None
 	try:
-		page = render_template("index.html")
+		page = render_template("index.html", player_name=player_text)
 	except:
-		print("!COULD NOT RENDER TEMPLATE!")
+		print("ERROR: could not render index.html")
 		page = "Unknown Error"
 	return page
 
+try:
+	address_file = open("address.txt", "r")
+	address = address_file.read()
+	address_file.close()
+except:
+	address_file = open("address.txt", "w")
+	address = "127.0.0.1"
+	address_file.write(address)
+	address_file.close()
+
 def SiteLoop():
+	global address
 	if __name__ == '__main__':
-		app.run(host='127.0.0.1', port=8000)
+		app.run(host=address, port=80)
 
 window = Tk()
 window.title("Buzzle Bee")
