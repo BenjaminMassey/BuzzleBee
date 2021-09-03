@@ -33,12 +33,19 @@ window = Tk()
 window.title("Buzzle Bee")
 window.geometry('300x600')
 
-def UpdaterLoop():
+def GuiLoop():
 	global window, players
+	
+	def Reset():
+		global players
+		players = []
+	button = Button(window, text="Reset", command=Reset)
+	button.config(font=("Courier", 24))
+	button.pack()
 	
 	text = StringVar()
 	text.set("")
-	label = Label(window, textvariable=text)
+	label = Label(window, textvariable=text, wraplength=300)
 	label.config(font=("Courier", 24))
 	label.pack()
 	
@@ -47,12 +54,12 @@ def UpdaterLoop():
 		for player in players:
 			queue += player + "\n"
 		text.set(queue)
-		time.sleep(0.2)
+		time.sleep(0.05)
 
 site = threading.Thread(target=SiteLoop)
 site.start()
 
-updater = threading.Thread(target=UpdaterLoop)
-updater.start()
+gui = threading.Thread(target=GuiLoop)
+gui.start()
 
 window.mainloop()
