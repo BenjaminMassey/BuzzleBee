@@ -27,19 +27,23 @@ def index():
 	return page
 
 try:
-	address_file = open("address.txt", "r")
-	address = address_file.read()
-	address_file.close()
+	with open("address.txt", "r") as address_file:
+	        address = address_file.read()
 except:
-	address_file = open("address.txt", "w")
-	address = "127.0.0.1"
-	address_file.write(address)
-	address_file.close()
+	address = "127.0.0.1:80"
+	with open("address.txt", "w") as address_file:
+	        address_file.write(address)
 
 def SiteLoop():
 	global address
+	fields = address.split(':')
+	host = fields[0]
+	if len(fields) > 1:
+		port = int(fields[1])
+	else:
+		port = 80
 	if __name__ == '__main__':
-		app.run(host=address, port=80)
+		app.run(host=host, port=port)
 
 window = Tk()
 window.title("Buzzle Bee")
