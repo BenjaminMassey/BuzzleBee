@@ -12,6 +12,8 @@ start_time = time.time()
 
 point_amount = 200
 
+bg_color = "Slategray1"
+
 @app.route('/', methods = ['GET', 'POST'])
 def index():
     global players, start_time
@@ -57,9 +59,10 @@ def SiteLoop():
 window = Tk()
 window.title("Buzzle Bee")
 window.geometry('600x900')
+window.configure(background=bg_color)
 
 def GuiLoop():
-    global window, players, start_time, point_amount
+    global window, players, start_time, point_amount, bg_color
     
     def Reset():
         global players, start_time
@@ -77,26 +80,44 @@ def GuiLoop():
         players[me] = (players[me][0] - point_amount, False)
     
     reset_button = Button(window, text="Reset", command=Reset)
-    reset_button.config(font=("Courier", 18))
+    reset_button.config(font=("Courier", 14))
     reset_button.pack(pady=20)
 
     green_text = StringVar()
     green_text.set("")
-    green_label = Label(window, textvariable=green_text, wraplength=600, fg="#009700")
-    green_label.config(font=("Courier", 24))
+    green_label = Label(window, textvariable=green_text, wraplength=600, fg="#009700", bg=bg_color)
+    green_label.config(font=("Courier", 16))
     green_label.pack()
 
     text = StringVar()
     text.set("")
-    label = Label(window, textvariable=text, wraplength=600)
-    label.config(font=("Courier", 24))
+    label = Label(window, textvariable=text, wraplength=600, bg=bg_color)
+    label.config(font=("Courier", 16))
     label.pack()
 
     points = StringVar()
     points.set(str(point_amount))
     point_entry = Entry(window, textvariable=points)
-    point_entry.config(font=("Courier", 14), width=8)
+    point_entry.config(font=("Courier", 10), width=8)
     point_entry.pack(pady=(0,20))
+
+    button_holder = Text(window, bg=bg_color, borderwidth=0, relief="solid")
+    button_holder.tag_configure("center", justify='center')
+    button_holder.configure(state="disabled")
+    button_holder.pack()
+
+    def addButtons(buttons):
+        button_holder.configure(state="normal")
+        for button in buttons:
+            button_holder.window_create(END, window=button)
+            button_holder.insert(END, "\n")
+        button_holder.insert(END, "\n\n")
+        button_holder.tag_add("center", "1.0", "end")
+        button_holder.configure(state="disabled")
+
+    scroller = Scrollbar(window, command=button_holder.yview)
+    
+    button_holder.configure(yscrollcommand=scroller.set)
 
     created = ""
 
@@ -105,11 +126,10 @@ def GuiLoop():
         for player in players.keys():
             if player not in created:
                 win = Button(window, text=player+" Win", command=lambda x=player: Winner(x), bg="#FFD700")
-                win.config(font=("Courier", 16))
-                win.pack()
+                win.config(font=("Courier", 10))
                 lose = Button(window, text=player+" Lose", command=lambda x=player: Loser(x), bg="#8B0000")
-                lose.config(font=("Courier", 10))
-                lose.pack()
+                lose.config(font=("Courier", 8))
+                addButtons([win, lose])
                 created += player
             piece = player + ": " + str(players[player][0])
             if players[player][1]:
